@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "bbq-core",
+    "bbq-rs",
+]
+
+

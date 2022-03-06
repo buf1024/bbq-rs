@@ -1,0 +1,35 @@
+[package]
+name = "bbq-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Luo Guochun <450171094@qq.com>"]
+description = "bbq-rs core"
+repository = "https://github.com/buf1024/bbq-rs"
+readme = "README.md"
+build = "../build.rs"
+include = ["src/**/*", "README.md"]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
+
+[dependencies]
+thiserror = "1.0.30"
+lazy_static = "1.4.0"
+bincode = "1.3.3"
+bs58 = "0.4.0"
+tokio = { version = "1.14.0", features = ["full"] }
+futures = "0.3.12"
+reqwest = { version = "0.11", features = ["json"] }
+regex = "1.5.4"
+chrono = "0.4.19"
+mongodb = { version = "2.1.0", features = ["bson-chrono-0_4"] }
+pyo3 = { version = "0.16.1", features = ["auto-initialize"] }
+
+[build-dependencies]
+vergen = { version = "6.0", default-features = false, features = ["build", "git", "cargo"] }
+anyhow = "1.0"
