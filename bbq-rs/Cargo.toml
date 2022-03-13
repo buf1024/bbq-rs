@@ -32,6 +32,8 @@ regex = "1.5.4"
 chrono = "0.4.19"
 mongodb = { version = "2.1.0", features = ["bson-chrono-0_4"] }
 pyo3 = { version = "0.16.1", features = ["auto-initialize"] }
+rdev = "0.5.1"
+bbq-core = {path = "../bbq-core"}
 
 [build-dependencies]
 vergen = { version = "6.0", default-features = false, features = ["build", "git", "cargo"] }
