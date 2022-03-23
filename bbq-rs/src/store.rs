@@ -1,6 +1,5 @@
 use std::collections::{BTreeSet, HashMap};
-use std::slice::Iter;
-use std::sync::{Arc, RwLock};
+use std::sync::{RwLock};
 use bbq_core::Account;
 
 
@@ -8,7 +7,9 @@ use bbq_core::Account;
 pub struct Store {
     pub module: Module,
     pub settings: Settings,
+    pub data: DataStore,
     pub trade: Trade,
+    pub backtest: Trade,
 }
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
@@ -84,3 +85,22 @@ pub struct Trade {
     pub account: Account,
 }
 
+#[derive(Default, Debug, Clone, serde::Deserialize, serde::Serialize)]
+pub struct CollInfo {
+    pub coll_name: String,
+    pub last_sync: String,
+    pub is_latest: bool,
+}
+
+#[derive(Default, Debug, Clone, serde::Deserialize, serde::Serialize)]
+pub struct DataStore {
+    pub stock_coll: Vec<CollInfo>,
+    pub stock_auto_sync: String,
+    pub stock_log: Vec<String>,
+    pub stock_log_show: bool,
+
+    pub fund_coll: Vec<CollInfo>,
+    pub fund_auto_sync: String,
+    pub fund_log: Vec<String>,
+    pub fund_log_show: bool,
+}

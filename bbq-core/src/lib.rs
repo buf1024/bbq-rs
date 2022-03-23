@@ -2,6 +2,9 @@ mod fetch;
 
 mod error;
 mod trader;
+mod data;
+mod consts;
+pub use consts::*;
 
 pub use error::QError;
 
@@ -12,10 +15,3 @@ pub use trader::position::Position;
 pub use trader::signal::Signal;
 
 pub type QResult<T> = Result<T, QError>;
-
-
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
-pub enum TrKind {
-    Fund,
-    Stock,
-}

@@ -54,22 +54,21 @@ impl Display for EntrustType {
     }
 }
 
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone)]
 pub struct Entrust {
-    entrust_id: String,
-    name: String,
-    code: String,
-    time: NaiveDateTime,
+    pub entrust_id: String,
+    pub name: String,
+    pub code: String,
+    pub time: NaiveDateTime,
 
-    entrust_type: EntrustType,
-    status: EntrustStatus,
+    pub entrust_type: EntrustType,
+    pub status: EntrustStatus,
 
-    price: f64,
-    volume: u32,
+    pub price: f64,
+    pub volume: u32,
 
-    volume_deal: u32,
-    volume_cancel: u32,
+    pub volume_deal: u32,
+    pub volume_cancel: u32,
 
-    desc: String
-
+    pub desc: String
 }

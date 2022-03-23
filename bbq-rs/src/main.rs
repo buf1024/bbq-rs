@@ -12,7 +12,7 @@ mod event;
 use tokio::sync::mpsc;
 use tokio::sync::broadcast;
 use futures::future::FutureExt;
-use crate::event::CoreEvent;
+use crate::event::TraderEvent;
 use crate::store::Store;
 
 
@@ -38,7 +38,7 @@ fn main() {
                         }
                     },
                     _ = to => {
-                        tk_event_tx.send(CoreEvent::Test("Event from Tokio".to_string()));
+                        // tk_event_tx.send(CoreEvent::Test("Event from Tokio".to_string()));
                         println!("recv timout")
                     }
                 }

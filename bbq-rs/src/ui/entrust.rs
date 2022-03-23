@@ -1,9 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use eframe::egui::{Context, Grid, Ui, Window};
-use bbq_core::{Entrust, Position};
-use crate::Store;
-use crate::ui::View;
+use bbq_core::{Entrust};
 
 pub struct EntrustView {
     columns: Vec<&'static str>,

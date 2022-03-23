@@ -1,5 +1,5 @@
 [package]
-name = "bbq-core"
+name = "bbq-strategy"
 version = "0.1.0"
 edition = "2021"
 authors = ["Luo Guochun <450171094@qq.com>"]

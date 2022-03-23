@@ -1,34 +1,18 @@
 use chrono::{NaiveDate, NaiveDateTime};
 use crate::fetch::RtQuot;
 use crate::trader::entrust::Entrust;
+use crate::trader::quotation::QuotEvent;
 use crate::trader::signal::Signal;
 
-pub enum Events {
+#[derive(Debug, Clone)]
+pub enum Event {
     Entrust(Entrust),
     Signal(Signal),
     Broker(BrokerData),
-    Quot(RtQuot),
-    Period(TradePeriod),
+    Quot(QuotEvent),
 }
 
 #[derive(Debug, Clone)]
-struct TradePeriod {
-    period: QuotPeriod,
-    quot_freq: u32,
-    trade_date: NaiveDate,
-    day_time: NaiveDateTime,
-}
-
-#[derive(Debug, Clone)]
-pub enum QuotPeriod {
-    QuotStart,
-    TradeMorningStart,
-    TradeMorningEnd,
-    TradeNoonStart,
-    TradeNoonEnd,
-    QuotEnd
-}
-
-struct BrokerData {
+pub struct BrokerData {
 
 }

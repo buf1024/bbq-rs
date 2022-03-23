@@ -9,6 +9,7 @@ mod tree;
 mod position;
 mod entrust;
 mod account;
+mod data;
 
 pub trait View {
     fn show(&mut self, ctx: &eframe::egui::Context, store: &mut Store);

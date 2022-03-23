@@ -64,3 +64,4 @@ z_gen_*.py
 *.ipynb_checkpoint*
 target
 *.lock
+.vscode

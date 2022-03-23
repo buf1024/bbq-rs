@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::fmt::format;
+use std::{collections::HashMap, fmt::format};
 use crate::fetch::{Fetcher, Quot, RtQuot};
 use async_trait::async_trait;
 use chrono::{NaiveDate, NaiveTime};
@@ -15,7 +14,7 @@ pub struct Sina {
 }
 
 impl Sina {
-    fn new() -> Self {
+    pub fn new() -> Self {
         let mut re_str = String::from(r"(\w+)=([^\s][^,]+?)");
         for _ in 0..29 {
             re_str.push_str(r",([\.\d]+)")
@@ -59,7 +58,7 @@ impl Fetcher for Sina {
                 code: String::from(&cap[1]),
                 name: String::from(&cap[2]),
                 open: cap[3].parse().map_err(|e| QError::Fetch(format!("Parse float: {}", e)))?,
-                pre_open: cap[4].parse().map_err(|e| QError::Fetch(format!("Parse float: {}", e)))?,
+                pre_close: cap[4].parse().map_err(|e| QError::Fetch(format!("Parse float: {}", e)))?,
                 now: cap[5].parse().map_err(|e| QError::Fetch(format!("Parse float: {}", e)))?,
                 high: cap[6].parse().map_err(|e| QError::Fetch(format!("Parse float: {}", e)))?,
                 low: cap[7].parse().map_err(|e| QError::Fetch(format!("Parse float: {}", e)))?,

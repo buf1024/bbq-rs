@@ -1,0 +1,25 @@
+init-cash = 100000.0
+# 交易品类 stock / fund
+kind = "stock"
+
+[fee]
+broker = 0.00025
+transfer = 0.00002
+tax = 0.001
+
+
+[push.email]
+smtp-host = "smtp.126.com"
+smtp-port = 465
+user = "barbarianquant@126.com"
+token = "DAZXJPKTVXRVOESQ"
+notify = "buf1024@qq.com"
+
+[push.wechat]
+token = "SCT79912TBBpSAKVv98IdQ3RWqCoQQNW2"
+
+[strategy]
+monitor = ["/Users/luoguochun/.config/bbq/strategy/monitor"]
+strategy = ["/Users/luoguochun/.config/bbq/strategy/strategy"]
+broker = ["/Users/luoguochun/.config/bbq/strategy/broker"]
+risk = ["/Users/luoguochun/.config/bbq/strategy/risk"]

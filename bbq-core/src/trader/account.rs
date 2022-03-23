@@ -76,7 +76,7 @@ impl Display for AccountKind {
     }
 }
 
-#[derive(Default, Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[derive(Default, Debug, Clone)]
 pub struct Account {
     pub account_id: String,
     pub status: AccountStatus,

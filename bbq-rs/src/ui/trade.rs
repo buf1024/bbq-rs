@@ -1,6 +1,6 @@
 use eframe::egui::{self, Vec2, CollapsingHeader, ComboBox, Context, Grid, Layout, TextEdit, TopBottomPanel, Ui, Window};
 use crate::Store;
-use crate::store::{Settings, TreePath};
+use crate::store::{Module, Settings, TreePath};
 use crate::ui::account::AccountView;
 use crate::ui::entrust::EntrustView;
 use crate::ui::position::PositionView;
@@ -12,13 +12,15 @@ pub struct TradeView {
     strategy_running: Tree<String>,
     path: String,
 
+    module: Module,
+
     position_view: PositionView,
     entrust_view: EntrustView,
     account_view: AccountView,
 }
 
 impl TradeView {
-    pub fn new() -> Self {
+    pub fn new(module: Module) -> Self {
         // let tree1 = Tree {
         //     name: "root".to_string(),
         //     selected: "".to_string(),
@@ -48,6 +50,7 @@ impl TradeView {
             strategy_running: Tree::new("策略运行中"),
             path: "".to_string(),
 
+            module,
             position_view: PositionView::new(),
             entrust_view: EntrustView::new(),
             account_view: AccountView::new(),

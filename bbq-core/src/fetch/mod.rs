@@ -1,11 +1,13 @@
 mod trade_date;
-mod sina;
-
 pub use trade_date::is_trade_date;
+
+mod sina;
+pub use sina::Sina;
+
 
 use async_trait::async_trait;
 use std::collections::HashMap;
-use chrono::{NaiveDate, NaiveTime, DateTime, Utc, Local, Datelike};
+use chrono::{NaiveDate, NaiveTime};
 use crate::QResult;
 
 pub type RtQuot = HashMap<String, Quot>;
@@ -15,7 +17,7 @@ pub struct Quot {
     pub code: String,
     pub name: String,
     pub open: f64,
-    pub pre_open: f64,
+    pub pre_close: f64,
     pub now: f64,
     pub high: f64,
     pub low: f64,

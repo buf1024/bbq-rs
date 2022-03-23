@@ -11,7 +11,8 @@ use eframe::epi;
 use eframe::epi::{Frame, Storage};
 use crate::store::{Module, Settings, Store};
 use tokio::sync::{mpsc, broadcast};
-use crate::event::{CoreEvent, UiEvent};
+use crate::event::{TraderEvent, CtrlEvent};
+use crate::ui::data::DataView;
 use crate::ui::setting::SettingView;
 use crate::ui::trade::TradeView;
 use crate::ui::View;
@@ -21,19 +22,22 @@ pub struct QApp {
     store: Store,
     store_t: Arc<RwLock<Store>>,
 
-    broadcast_tx: broadcast::Sender<UiEvent>,
-    event_rx: Option<mpsc::UnboundedReceiver<CoreEvent>>,
+    broadcast_tx: broadcast::Sender<CtrlEvent>,
+    event_rx: Option<mpsc::UnboundedReceiver<TraderEvent>>,
 
     views: HashMap<Module, Box<dyn View>>,
 }
 
 
 impl QApp {
-    pub fn new(broadcast_tx: broadcast::Sender<UiEvent>, mut event_rx: mpsc::UnboundedReceiver<CoreEvent>) -> Self {
+    pub fn new(broadcast_tx: broadcast::Sender<CtrlEvent>, mut event_rx: mpsc::UnboundedReceiver<TraderEvent>) -> Self {
 
         let mut views: HashMap<Module, Box<dyn View>> = HashMap::new();
         views.insert(Module::Setting, Box::new(SettingView::new()));
-        views.insert(Module::Trade, Box::new(TradeView::new()));
+        views.insert(Module::Data, Box::new(DataView::new()));
+        views.insert(Module::Backtest, Box::new(TradeView::new(Module::Backtest)));
+        views.insert(Module::Trade, Box::new(TradeView::new(Module::Trade)));
+
 
         let store = Store::default();
         Self {
@@ -48,12 +52,12 @@ impl QApp {
 
     fn event_task(&self, frame: Frame,
                   store: Arc<RwLock<Store>>,
-                  mut event_rx: mpsc::UnboundedReceiver<CoreEvent>) {
+                  mut event_rx: mpsc::UnboundedReceiver<TraderEvent>) {
         std::thread::spawn(move || {
             let mut loop_count = 0;
             while let Some(event) = event_rx.blocking_recv() {
                 match event {
-                    CoreEvent::Test(val) => {
+                    TraderEvent::Test(val) => {
                         let mut store = store.write().unwrap();
                         println!("ui receive: {}, loop_count: {}", val, loop_count);
                         store.settings.db_url = format!("new store event: {}", loop_count);
@@ -163,8 +167,8 @@ impl epi::App for QApp {
 
         self.side_panel(ctx);
 
-        if self.store.module == Module::Trade {
-            self.views.get_mut(&Module::Trade).unwrap().show(ctx, &mut self.store);
+        if self.views.contains_key(&self.store.module) {
+            self.views.get_mut(&self.store.module).unwrap().show(ctx, &mut self.store);
         }
 
         if self.store.settings.show {

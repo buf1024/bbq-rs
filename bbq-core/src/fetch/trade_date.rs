@@ -1,9 +1,8 @@
-use std::collections::BTreeSet;
-use chrono::NaiveDate;
+use chrono::{Local, NaiveDate, Datelike};
 use lazy_static::lazy_static;
-use reqwest::{self, header};
+use std::collections::BTreeSet;
+use std::sync::Arc;
 use std::sync::RwLock;
-use crate::{QResult, QError};
 
 lazy_static! {
     static ref TRADE_DAYS: RwLock<BTreeSet<i32>> = {
@@ -13,58 +12,65 @@ lazy_static! {
     };
 }
 
-pub async fn is_trade_date(date: &NaiveDate) -> QResult<bool> {
-    let trade_days = TRADE_DAYS.read().unwrap();
-    let day: i32 = date.format("%Y%m%d").to_string().parse().unwrap();
-    let mut is_trade_day = trade_days.contains(&day);
-    if !is_trade_day {
-        let last_day = *trade_days.iter().next_back().unwrap();
-        if day > last_day {
-            drop(trade_days);
-
-            let mut h = header::HeaderMap::new();
-            h.insert("user-agent",
-                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36".parse().unwrap());
-
-            let client = reqwest::Client::builder()
-                .default_headers(h)
-                .build()
-                .map_err(|e|QError::GetTradeDay(format!("{}", e)))?;
-
-
-            let data = client.get("https://luoguochun.cn/bbq-rs/trade_date.txt")
-                .send().await.map_err(|e| QError::GetTradeDay(format!("{}", e)))?
-                .text().await.map_err(|e| QError::GetTradeDay(format!("{}", e)))?;
-            let mut trade_days = TRADE_DAYS.write().unwrap();
-            trade_days.clear();
-            for it in data.split(",") {
-                let day: i32 = it.parse().map_err(|e| QError::GetTradeDay(format!("{}", e)))?;
-                trade_days.insert(day);
-            }
-            is_trade_day = trade_days.contains(&day);
+pub fn is_trade_date(date: &NaiveDate, path: Option<&str>) -> bool {
+    let mut reset = false;
+    let test_day: i32 = date.format("%Y%m%d").to_string().parse().unwrap();
+    {
+        let trade_days = TRADE_DAYS.read().unwrap();
+        let is_trade_day = trade_days.contains(&test_day);
+        if is_trade_day {
+            return true;
         }
+        if !is_trade_day && path.is_some() {
+            let n = Local::now().naive_local();
+            let n_year = n.year();
+            if trade_days.is_empty() {
+                reset = true;
+            } else {
+                let latest_year = *trade_days.iter().next_back().unwrap() / 10000;
+                if n_year > latest_year {
+                    reset = true;
+                }
+            }
+        }
+        // trade_days not send
     }
-    Ok(is_trade_day)
+    if reset {
+        let s = std::fs::read_to_string(path.unwrap()).unwrap_or("".to_string());
+        if s.is_empty() {
+            return false;
+        }
+
+        let mut tmp_set = BTreeSet::new();
+        for it in s.split(",") {
+            let day: i32 = it.parse().unwrap_or(-1);
+            if day < 0 {
+                return false;
+            }
+            tmp_set.insert(day);
+        }
+        let mut trade_days = TRADE_DAYS.write().unwrap();
+        trade_days.clear();
+        trade_days.extend(tmp_set.into_iter());
+        return trade_days.contains(&test_day);
+    }
+    false
 }
 
 #[cfg(test)]
 mod test {
     #[test]
     fn test_is_trade_date() {
-        use chrono::NaiveDate;
         use super::is_trade_date;
+        use chrono::NaiveDate;
 
-        let rt = tokio::runtime::Builder::new_multi_thread().enable_all().build().unwrap();
-        rt.block_on(async move {
-            let date: NaiveDate = NaiveDate::parse_from_str("2022-03-02", "%Y-%m-%d").unwrap();
-            assert!(is_trade_date(&date).await.unwrap());
+        let date: NaiveDate = NaiveDate::parse_from_str("2022-03-02", "%Y-%m-%d").unwrap();
+        assert!(is_trade_date(&date, Some("src/fetch/trade_date.txt")));
 
-            let date: NaiveDate = NaiveDate::parse_from_str("2022-03-07", "%Y-%m-%d").unwrap();
-            assert!(is_trade_date(&date).await.unwrap());
+        let date: NaiveDate = NaiveDate::parse_from_str("2022-03-07", "%Y-%m-%d").unwrap();
+        assert!(is_trade_date(&date, None));
 
-            let date: NaiveDate = NaiveDate::parse_from_str("2022-03-06", "%Y-%m-%d").unwrap();
-            assert!(!is_trade_date(&date).await.unwrap());
-        });
+        let date: NaiveDate = NaiveDate::parse_from_str("2022-03-06", "%Y-%m-%d").unwrap();
+        assert!(!is_trade_date(&date, None));
     }
 }
-
