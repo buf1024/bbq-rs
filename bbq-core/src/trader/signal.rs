@@ -1,6 +1,10 @@
 use std::fmt::{Display, Formatter};
 
+use chrono::NaiveDateTime;
+use serde::{Serialize, Deserialize};
+
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SignalType {
     Sell,
     Buy,
@@ -25,6 +29,7 @@ impl Display for SignalType {
 }
 
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SignalSource {
     Risk(String),
     Strategy(String),
@@ -50,24 +55,27 @@ impl Display for SignalSource {
     }
 }
 
-#[derive(Default, Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, default, rename_all = "snake_case")]
 pub struct Signal {
-    signal_id: String,
+    pub signal_id: String,
     // 信号源
-    source: SignalSource,
-    signal: SignalType,
+    pub source: SignalSource,
+    pub signal: SignalType,
 
     // 股票名称
-    name: String,
+    pub name: String,
     // 股票代码
-    code: String,
+    pub code: String,
     // 信号时间
-    time: String,
+    pub time: Option<NaiveDateTime>,
 
     // 价格
-    price: f64,
+    pub price: f64,
     // 量
-    volume: f64,
+    pub volume: u32,
     // 描述
-    desc: String,
+    pub desc: String,
+
+    pub entrust_id: Option<String>,
 }

@@ -1,7 +1,6 @@
 use chrono::{Local, NaiveDate, Datelike};
 use lazy_static::lazy_static;
 use std::collections::BTreeSet;
-use std::sync::Arc;
 use std::sync::RwLock;
 
 lazy_static! {
@@ -12,7 +11,8 @@ lazy_static! {
     };
 }
 
-pub fn is_trade_date(date: &NaiveDate, path: Option<&str>) -> bool {
+#[allow(dead_code)]
+pub fn is_trade_date(date: &NaiveDate) -> bool {
     let mut reset = false;
     let test_day: i32 = date.format("%Y%m%d").to_string().parse().unwrap();
     {
@@ -21,7 +21,7 @@ pub fn is_trade_date(date: &NaiveDate, path: Option<&str>) -> bool {
         if is_trade_day {
             return true;
         }
-        if !is_trade_day && path.is_some() {
+        if !is_trade_day {
             let n = Local::now().naive_local();
             let n_year = n.year();
             if trade_days.is_empty() {
@@ -36,6 +36,10 @@ pub fn is_trade_date(date: &NaiveDate, path: Option<&str>) -> bool {
         // trade_days not send
     }
     if reset {
+        let path = std::env::var("BBQ_TRADE_DATE");
+        if path.is_err() {
+            return false;
+        }
         let s = std::fs::read_to_string(path.unwrap()).unwrap_or("".to_string());
         if s.is_empty() {
             return false;
@@ -64,13 +68,14 @@ mod test {
         use super::is_trade_date;
         use chrono::NaiveDate;
 
+        std::env::set_var("BBQ_TRADE_DATE", "src/fetch/trade_date.txt");
         let date: NaiveDate = NaiveDate::parse_from_str("2022-03-02", "%Y-%m-%d").unwrap();
-        assert!(is_trade_date(&date, Some("src/fetch/trade_date.txt")));
+        assert!(is_trade_date(&date));
 
         let date: NaiveDate = NaiveDate::parse_from_str("2022-03-07", "%Y-%m-%d").unwrap();
-        assert!(is_trade_date(&date, None));
+        assert!(is_trade_date(&date));
 
         let date: NaiveDate = NaiveDate::parse_from_str("2022-03-06", "%Y-%m-%d").unwrap();
-        assert!(!is_trade_date(&date, None));
+        assert!(!is_trade_date(&date));
     }
 }

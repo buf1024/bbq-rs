@@ -1,6 +1,6 @@
 use std::collections::{BTreeSet, HashMap};
 use std::sync::{RwLock};
-use bbq_core::Account;
+use bbq_core::account::Account;
 
 
 #[derive(Default, Debug, Clone, serde::Deserialize, serde::Serialize)]

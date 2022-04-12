@@ -1,10 +1,5 @@
-use std::cmp::Ordering;
-use std::collections::HashMap;
-use eframe::egui::{Area, CollapsingHeader, Context, Grid, Layout, ScrollArea, SidePanel, Ui, Vec2, Window};
-use tracing_subscriber::fmt::format;
-use bbq_core::{Account, Entrust, Position};
-use crate::Store;
-use crate::ui::View;
+use eframe::egui::{CollapsingHeader, Context, Grid, Layout, ScrollArea, SidePanel, Ui, Vec2, Window};
+use bbq_core::trader::{Account};
 
 pub struct AccountView {}
 
@@ -34,7 +29,7 @@ impl AccountView {
                             ui.with_layout(Layout::right_to_left(),
                                            |ui|
                                                ui.label("交易类别:"));
-                            ui.label(account.category.to_string());
+                            ui.label(account.kind.to_string());
 
                             ui.with_layout(Layout::right_to_left(),
                                            |ui|
@@ -129,7 +124,7 @@ impl AccountView {
                                     ui.with_layout(Layout::right_to_left(),
                                                    |ui|
                                                        ui.label("交易策略:"));
-                                    ui.label(account.strategy_name.to_string());
+                                    // ui.label(account.strategy_name.to_string());
 
                                     if ui.button("参数").clicked() {}
                                     ui.end_row();
@@ -137,14 +132,14 @@ impl AccountView {
                                     ui.with_layout(Layout::right_to_left(),
                                                    |ui|
                                                        ui.label("风控策略:"));
-                                    ui.label(account.risk_name.to_string());
+                                    // ui.label(account.risk_name.to_string());
                                     if ui.button("参数").clicked() {}
                                     ui.end_row();
 
                                     ui.with_layout(Layout::right_to_left(),
                                                    |ui|
                                                        ui.label("交易接口:"));
-                                    ui.label(account.broker_name.to_string());
+                                    // ui.label(account.broker_name.to_string());
                                     if ui.button("参数").clicked() {}
                                     ui.end_row();
                                 });

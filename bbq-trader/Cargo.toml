@@ -1,0 +1,44 @@
+[package]
+authors = ["Luo Guochun <450171094@qq.com>"]
+description = "bbq-trader"
+edition = "2021"
+include = ["src/**/*", "README.md"]
+name = "bbq-trader"
+readme = "README.md"
+repository = "https://github.com/buf1024/bbq-rs"
+version = "0.1.0"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+codegen-units = 1
+lto = true
+panic = "abort"
+
+[dependencies]
+bbq-core = {path = "../bbq-core"}
+bbq-strategy = {path = "../bbq-strategy"}
+anyhow = "1.0.55"
+async-trait = "0.1.52"
+bincode = "1.3.3"
+chrono = {version = "0.4.19", features = ["serde"]}
+futures = "0.3.21"
+lazy_static = "1.4.0"
+log = "0.4.14"
+mongodb = {version = "2.1.0", features = ["bson-chrono-0_4"]}
+pyo3 = {version = "0.16.2", features = ["auto-initialize"]}
+regex = "1.5.4"
+reqwest = {version = "0.11.9", features = ["json"]}
+serde = {version = "1.0.136", features = ["derive"]}
+serde_json = "1.0.79"
+tokio = {version = "1.17.0", features = ["full"]}
+toml = "0.5.8"
+directories = "4.0.1"
+fern = "0.6.0"
+fdlimit = "0.2.1"
+backoff = "0.4.0"
+sled = "0.34.7"
+convert_case = "0.5.0"
+uuid = "0.8.2"
+libloading = "0.7.3"

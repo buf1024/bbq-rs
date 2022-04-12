@@ -1,0 +1,13 @@
+[package]
+edition = "2021"
+name = "strategy"
+version = "0.1.0"
+
+[lib]
+crate-type = ["dylib"]
+
+[dependencies]
+async-trait = "0.1.52"
+anyhow = "1.0.55"
+log = "0.4.14"
+bbq-strategy = {path = "../../bbq-strategy"}

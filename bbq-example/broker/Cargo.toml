@@ -1,0 +1,14 @@
+[package]
+edition = "2021"
+name = "broker"
+version = "0.1.0"
+
+[lib]
+crate-type = ["dylib"]
+
+[dependencies]
+anyhow = "1.0.55"
+async-trait = "0.1.52"
+bbq-strategy = {path = "../../bbq-strategy"}
+log = "0.4.14"
+tokio = {version = "1.17.0", features = ["sync"]}

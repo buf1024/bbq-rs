@@ -1,6 +1,10 @@
 [workspace]
 members = [
-    "bbq-strategy",
-    "bbq-rs",
-    "bbq-core"
+  "bbq-core",
+  "bbq-trader",
+  "bbq-strategy",
+  "bbq-rs",
+  "bbq-example/strategy",
+  "bbq-example/broker",
+  "bbq-example/risk"
 ]

@@ -1,19 +1,22 @@
-use std::fmt::{Display, Formatter};
 use chrono::NaiveDateTime;
-
+use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+use uuid::Uuid;
+use super::signal::Signal;
 
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum EntrustStatus {
     Init,
     Commit,
     Deal,
     PartDeal,
-    Cancel
+    Cancel,
 }
 
 impl Default for EntrustStatus {
     fn default() -> Self {
-        Self::Cancel
+        Self::Init
     }
 }
 
@@ -24,17 +27,18 @@ impl Display for EntrustStatus {
             EntrustStatus::Commit => "已提交",
             EntrustStatus::Deal => "已成交",
             EntrustStatus::PartDeal => "部分成交",
-            EntrustStatus::Cancel => "撤销"
+            EntrustStatus::Cancel => "已撤销",
         };
         write!(f, "{}", s)
     }
 }
 
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum EntrustType {
     Buy,
     Sell,
-    Cancel
+    Cancel,
 }
 
 impl Default for EntrustType {
@@ -54,12 +58,13 @@ impl Display for EntrustType {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, default, rename_all = "snake_case")]
 pub struct Entrust {
     pub entrust_id: String,
     pub name: String,
     pub code: String,
-    pub time: NaiveDateTime,
+    pub time: Option<NaiveDateTime>,
 
     pub entrust_type: EntrustType,
     pub status: EntrustStatus,
@@ -70,5 +75,30 @@ pub struct Entrust {
     pub volume_deal: u32,
     pub volume_cancel: u32,
 
-    pub desc: String
+    pub desc: String,
+
+    pub broker_entrust_id: Option<String>,
+}
+
+impl Entrust {
+    pub fn new_from_signal(signal: &Signal) -> Self {
+        Self {
+            entrust_id: Uuid::new_v4().to_simple().to_string(),
+            name: signal.name.clone(),
+            code: signal.code.clone(),
+            time: signal.time.clone(),
+            entrust_type: match signal.signal {
+                super::signal::SignalType::Sell => EntrustType::Sell,
+                super::signal::SignalType::Buy => EntrustType::Buy,
+                super::signal::SignalType::Cancel => EntrustType::Cancel,
+            },
+            status: EntrustStatus::Init,
+            price: signal.price,
+            volume: signal.volume,
+            volume_deal: 0,
+            volume_cancel: 0,
+            desc: "".to_string(),
+            broker_entrust_id: None,
+        }
+    }
 }

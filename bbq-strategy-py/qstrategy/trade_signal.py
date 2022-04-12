@@ -1,31 +1,34 @@
 from datetime import datetime
 
-
-class TradeSignal:
+class Signal:
     sig_sell, sig_buy, sig_cancel = 'sell', 'buy', 'cancel'
-    risk, strategy, broker, robot = 'risk', 'strategy', 'broker', 'robot'
 
-    def __init__(self, signal_id: str, *,
-                 source: str = '', source_name: str = '', signal: str = '',
-                 code: str = '', name: str = '', price: float = 0.0, volume: int = 0,
-                 time: datetime = None, desc: str = '', entrust_id: str = ''):
-        self.source = source  # 信号源, risk:xxx, strategy:xx, broker:xx, robot:
-        self.source_name = source_name
+    def __init__(self, *, signal: str = '',
+                 code: str = '', name: str = '',
+                 price: float = 0.0, volume: int = 0,
+                 desc: str = '', entrust_id: str = None,
+                 time: datetime = None):
         self.signal = signal  # sell, buy, cancel
 
         self.name = name  # 股票名称
         self.code = code  # 股票代码
-        self.time = time  # 时间
+        self.time = time
 
         self.price = price
         self.volume = volume
         self.desc = desc
 
-        self.entrust_id = entrust_id  # sell / cancel 有效
+        self.entrust_id = None  # sell / cancel 有效
 
     def to_dict(self):
-        return {'signal_id': self.signal_id, 'name': self.name, 'code': self.code,
-                'source': self.source, 'source_name': self.source_name, 'signal': self.signal,
-                'volume': self.volume, 'price': self.price, 'desc': self.desc,
-                'time': self.time.strftime('%Y-%m-%d %H:%M:%S') if self.time is not None else None
-                }
+        d = {}
+        d['signal'] = self.signal
+        d['name'] = self.name
+        d['code'] = self.code
+        d['time'] = None if self.time is None else self.time.strftime(
+            "%Y-%m-%dT%H:%M:%S.%f")
+        d['price'] = self.price
+        d['volume'] = self.volume
+        d['desc'] = self.desc
+        d['entrust_id'] = self.entrust_id
+        return d

@@ -9,16 +9,12 @@ use ui::app::QApp;
 mod store;
 mod event;
 
-use tokio::sync::mpsc;
-use tokio::sync::broadcast;
-use futures::future::FutureExt;
-use crate::event::TraderEvent;
+use tokio::sync::{mpsc, broadcast};
+use tokio::time;
 use crate::store::Store;
 
 
 fn main() {
-    tracing_subscriber::fmt::init();
-
     let (event_tx, mut event_rx ) = mpsc::unbounded_channel();
     let (broadcast_tx, _) = broadcast::channel(16);
 
@@ -29,17 +25,15 @@ fn main() {
         let mut builder = tokio::runtime::Builder::new_multi_thread();
         builder.enable_all().build().expect("tokio rt").block_on(async move  {
             loop {
-                let to = tokio::time::sleep(Duration::from_secs(5)).boxed();
-
                 tokio::select! {
                     val = tk_broadcast_rx.recv() => {
                         if let Ok(v) = val {
                             println!("receive broadcast, break: {:?}", v);
                         }
                     },
-                    _ = to => {
+                    _ =  time::sleep(Duration::from_secs(5)) => {
                         // tk_event_tx.send(CoreEvent::Test("Event from Tokio".to_string()));
-                        println!("recv timout")
+                        println!("recv timeout")
                     }
                 }
             }
