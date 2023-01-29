@@ -5,8 +5,7 @@ use std::ops::Deref;
 use std::sync::{Arc, RwLock};
 use eframe::egui::{self, Window, Color32, Context, Id, Layout, Rgba, TextFormat, Visuals, CollapsingHeader, Ui, RichText, Vec2};
 use eframe::egui::text::LayoutJob;
-use eframe::epi;
-use eframe::epi::{Frame, Storage};
+use eframe::{Frame, Storage};
 use crate::store::{Module, Settings, Store};
 use tokio::sync::{mpsc, broadcast};
 use crate::event::{TraderEvent, CtrlEvent};
@@ -62,7 +61,7 @@ impl QApp {
                     }
                 }
                 loop_count = loop_count + 1;
-                frame.request_repaint()
+                // frame.request_repaint()
             }
         });
     }
@@ -108,8 +107,8 @@ impl QApp {
     }
 }
 
-impl epi::App for QApp {
-    fn update(&mut self, ctx: &Context, frame: &Frame) {
+impl eframe::App for QApp {
+    fn update(&mut self, ctx: &Context, frame: &mut Frame) {
         {
             let store_t = self.store_t.read().unwrap();
             self.store = store_t.deref().clone();
@@ -180,32 +179,32 @@ impl epi::App for QApp {
         }
     }
 
-    fn setup(&mut self, ctx: &Context, frame: &Frame, _storage: Option<&dyn Storage>) {
-        if let Some(storage) = _storage {
-            self.store = epi::get_value(storage, epi::APP_KEY).unwrap_or_default();
-        }
-        crate::font::install_fonts(ctx);
-        ctx.set_visuals(Visuals::dark());
-
-
-        let mut event_rx = self.event_rx.take().unwrap();
-        self.event_task(frame.clone(),
-                        self.store_t.clone(),
-                        event_rx);
-    }
+    // fn setup(&mut self, ctx: &Context, frame: &Frame, _storage: Option<&dyn Storage>) {
+    //     if let Some(storage) = _storage {
+    //         self.store = eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
+    //     }
+    //     crate::font::install_fonts(ctx);
+    //     ctx.set_visuals(Visuals::dark());
+    //
+    //
+    //     let mut event_rx = self.event_rx.take().unwrap();
+    //     self.event_task((*frame).clone(),
+    //                     self.store_t.clone(),
+    //                     event_rx);
+    // }
 
     fn save(&mut self, storage: &mut dyn Storage) {
-        epi::set_value(storage, epi::APP_KEY, &self.store);
+        eframe::set_value(storage, eframe::APP_KEY, &self.store);
     }
 
-    fn name(&self) -> &str {
-        "bbq-rs"
-    }
+    // fn name(&self) -> &str {
+    //     "bbq-rs"
+    // }
 
-    fn clear_color(&self) -> Rgba {
+    fn clear_color(&self, _visuals: &egui::Visuals) -> Rgba {
         Rgba::TRANSPARENT
     }
-    fn on_exit(&mut self) {}
+    fn on_exit(&mut self, _gl: Option<&glow::Context>) {}
 }
 
 
